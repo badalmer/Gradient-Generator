@@ -97,7 +97,7 @@ function setup() {
   paletteLabel.position(panelX + 10, panelY + 200);
   ButtonStyle(paletteLabel, buttonWidth);
 
-  paletteSizeSlider = createSlider(1, 12, paletteSize, 1); // min 1 now
+  paletteSizeSlider = createSlider(1, 6, paletteSize, 1); // min 1 now
   paletteSizeSlider.position(panelX + 10, panelY + 220);
   ButtonStyle(paletteSizeSlider, buttonWidth);
   paletteSizeSlider.input(() => {
