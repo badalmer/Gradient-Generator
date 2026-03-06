@@ -101,13 +101,15 @@ function setup() {
   paletteSizeSlider.position(panelX + 10, panelY + 220);
   ButtonStyle(paletteSizeSlider, buttonWidth);
   paletteSizeSlider.input(() => {
-    const anyInputUsed = colorInputs.some(inp => inp.value().trim() !== "");
-    if (anyInputUsed) {
-      paletteSize = max(3, paletteSizeSlider.value());
-      paletteSizeSlider.value(paletteSize);
-    } else {
-      paletteSize = paletteSizeSlider.value();
+    let filled = colorInputs.filter(inp => inp.value().trim() !== "").length;
+    let minSize = max(1, filled);
+  
+    if (paletteSizeSlider.value() < minSize) {
+      paletteSizeSlider.value(minSize);
     }
+  
+    paletteSize = paletteSizeSlider.value();
+  
     generatePalette();
     redraw();
   });
@@ -253,26 +255,33 @@ function displayGradientGrid() {
 }
 
 function generatePalette() {
-  const anyInputUsed = colorInputs.some(inp => inp.value().trim() !== "");
   let inputPalette = [];
+  for (let i = 0; i < colorInputs.length; i++) {
+    let val = colorInputs[i].value().trim();
+    if (!val) continue;
 
-  if (anyInputUsed) {
-    for (let i = 0; i < colorInputs.length; i++) {
-      let val = colorInputs[i].value().trim();
-      if (!val) continue;
-      if (/^#([0-9A-F]{6})$/i.test(val)) inputPalette.push(color(val));
-      else if (/^\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*$/.test(val)) {
-        let parts = val.split(",").map(s => Number(s.trim()));
-        if (parts.every(v => v >= 0 && v <= 255)) inputPalette.push(color(parts[0], parts[1], parts[2]));
+    if (/^#([0-9A-F]{6})$/i.test(val)) {
+      inputPalette.push(color(val));
+    }
+    else if (/^\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*$/.test(val)) {
+      let parts = val.split(",").map(s => Number(s.trim()));
+      if (parts.every(v => v >= 0 && v <= 255)) {
+        inputPalette.push(color(parts[0], parts[1], parts[2]));
       }
     }
-    paletteSize = max(3, paletteSizeSlider.value());
-    paletteSizeSlider.value(paletteSize);
   }
 
-  // Fill palette with inputs first, then random/B&W colors
+  let minSize = max(1, inputPalette.length);
+
+  if (paletteSize < minSize) {
+    paletteSize = minSize;
+    paletteSizeSlider.value(minSize);
+  }
+
   palette = [...inputPalette];
+
   let additional = paletteSize - palette.length;
+
   for (let i = 0; i < additional; i++) {
     if (isBW) {
       palette.push(paletteSize === 1 ? color(0) : color(int(random(255))));
