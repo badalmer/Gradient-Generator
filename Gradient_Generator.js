@@ -157,7 +157,7 @@ function setup() {
     .style('line-height', '25px')
     .position(panelX + 10, panelY + 400);
 
-  bgInput = createInput("#ffffff");
+  bgInput = createInput("#000000");
   bgInput.position(panelX + panelWidth - 170 + 80, panelY + 400);
   bgInput.size(80);
   ButtonStyle(bgInput, 80);
